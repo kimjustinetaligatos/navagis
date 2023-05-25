@@ -74,17 +74,25 @@ const mapStyle = [{
     ],
   },
   ];
-  
+  var originLocation, map;
+  var storeLocArr = [];
+  storeLocArr[0] = [];
+  var directionsService;
+  var directionsRenderer;
+
   function initMap() {
     // Create the map.
-    const map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 12,
-      center: {lat: 10.382029, lng: 123.8661649},
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 13.25,
+      center: {lat: 10.3105615, lng: 123.9154884},
       styles: mapStyle,
     });
-  
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+
     // Load the stores GeoJSON onto the map.
-    map.data.loadGeoJson('stores.json?r=1', {idPropertyName: 'storeid'});
+    map.data.loadGeoJson('stores.json?', {idPropertyName: 'storeid'});
   
     // Define the custom marker icons, using the store's "category".
     map.data.setStyle((feature) => {
@@ -106,13 +114,17 @@ const mapStyle = [{
       const description = event.feature.getProperty('description');
       const hours = event.feature.getProperty('hours');
       const phone = event.feature.getProperty('phone');
+      const img_specialty = event.feature.getProperty('img_specialty');
       const position = event.feature.getGeometry().get();
       const content = `
         <img style="float:left; width:200px; margin-top:30px" src="img/logo_${category}.png">
         <div style="margin-left:220px; margin-bottom:20px;">
           <h2>${name}</h2><p>${description}</p>
           <p><b>Open:</b> ${hours}<br/><b>Phone:</b> ${phone}</p>
-          <p><img src="https://maps.googleapis.com/maps/api/streetview?size=350x120&location=${position.lat()},${position.lng()}&key=${apiKey}&solution_channel=GMP_codelabs_simplestorelocator_v1_a"></p>
+          <p>
+            <span>Food Specialty</span><br>
+            <img src="img/specialty/${img_specialty}" width="200px">
+          </p>
         </div>
         `;
   
@@ -130,7 +142,7 @@ const mapStyle = [{
   const input = document.createElement('input');
   const options = {
     types: ['address'],
-    componentRestrictions: {country: 'gb'},
+    componentRestrictions: {country: 'ph'},
   };
 
   card.setAttribute('id', 'pac-card');
@@ -140,7 +152,7 @@ const mapStyle = [{
   container.setAttribute('id', 'pac-container');
   input.setAttribute('id', 'pac-input');
   input.setAttribute('type', 'text');
-  input.setAttribute('placeholder', 'Enter an address');
+  input.setAttribute('placeholder', 'Enter you location address');
   container.appendChild(input);
   card.appendChild(titleBar);
   card.appendChild(container);
@@ -157,7 +169,7 @@ const mapStyle = [{
       // Set the origin point when the user selects an address
   const originMarker = new google.maps.Marker({map: map});
   originMarker.setVisible(false);
-  let originLocation = map.getCenter();
+  originLocation = map.getCenter();
 
   autocomplete.addListener('place_changed', async () => {
     originMarker.setVisible(false);
@@ -174,7 +186,7 @@ const mapStyle = [{
     // Recenter the map to the selected address
     originLocation = place.geometry.location;
     map.setCenter(originLocation);
-    map.setZoom(9);
+    map.setZoom(13.5);
     console.log(place);
 
     originMarker.setPosition(originLocation);
@@ -182,7 +194,7 @@ const mapStyle = [{
 
     // Use the selected address as the origin to calculate distances
     // to each of the store locations
-    const rankedStores = await calculateDistances(map.data, originLocation);
+    const rankedStores = await calculateDistances(map.data, originLocation, map);
     showStoresList(map.data, rankedStores);
 
     return;
@@ -192,7 +204,7 @@ const mapStyle = [{
   }
 
 
-  async function calculateDistances(data, origin) {
+  async function calculateDistances(data, origin, map) {
     const stores = [];
     const destinations = [];
   
@@ -203,8 +215,9 @@ const mapStyle = [{
   
       stores.push(storeNum);
       destinations.push(storeLoc);
+      storeLocArr[storeNum] ={lat: storeLoc.lat(), lng: storeLoc.lng()}
     });
-  
+
     // Retrieve the distances of each store from the origin
     // The returned list will be in the same order as the destinations list
     const service = new google.maps.DistanceMatrixService();
@@ -243,8 +256,28 @@ const mapStyle = [{
     distancesList.sort((first, second) => {
       return first.distanceVal - second.distanceVal;
     });
-  
+
     return distancesList;
+  }
+
+  function drawLine(storeid){
+
+
+    directionsRenderer.setMap(map);
+    directionsRenderer.setOptions( { suppressMarkers: true } );
+
+    var request = {
+      origin: originLocation.lat() + ',' + originLocation.lng(),
+      destination: storeLocArr[storeid].lat + ',' + storeLocArr[storeid].lng,
+      travelMode: 'DRIVING',
+    };
+
+    //DRAW LINE
+    directionsService.route(request, function(result, status) {
+      if (status == 'OK') {
+        directionsRenderer.setDirections(result);
+      }
+    });
   }
 
 
@@ -285,6 +318,12 @@ const mapStyle = [{
       distanceText.classList.add('distanceText');
       distanceText.textContent = store.distanceText;
       panel.appendChild(distanceText);
+      const distanceButton = document.createElement('button');
+      distanceButton.classList.add('distanceButton');
+      distanceButton.textContent = "Directions";
+      //distanceButton.addEventListener('click', drawLine);
+      distanceButton.onclick = function() { drawLine(store.storeid); };
+      panel.appendChild(distanceButton);
     });
   
     // Open the panel

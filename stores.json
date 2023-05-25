@@ -13,6 +13,7 @@
                 "hours": "6am - 10pm",
                 "description": "Spanish restaurant",
                 "name": "Arano's Bar and Restaurant",
+                "img_specialty": "arano.png",
                 "phone": "0322561934",
                 "storeid": "01"
             }
@@ -30,6 +31,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "Lighthouse Restaurant",
+                "img_specialty": "lighthouse.png",
                 "phone": "0322561934",
                 "storeid": "02"
             }
@@ -47,6 +49,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "Amarillo Restaurant",
+                "img_specialty": "amarillo.png",
                 "phone": "0322561934",
                 "storeid": "03"
             }
@@ -64,6 +67,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "Dungawan Garden Restaurant",
+                "img_specialty": "dungawan.png",
                 "phone": "0322561934",
                 "storeid": "04"
             }
@@ -81,6 +85,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "Minnan Seafood restaurant",
+                "img_specialty": "minnan.png",
                 "phone": "0322561934",
                 "storeid": "05"
             }
@@ -98,6 +103,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "A MESA TAPAS",
+                "img_specialty": "mesa.png",
                 "phone": "0322561934",
                 "storeid": "06"
             }
@@ -115,6 +121,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "Clare Restaurant",
+                "img_specialty": "clare.png",
                 "phone": "0322561934",
                 "storeid": "07"
             }
@@ -132,6 +139,7 @@
                 "hours": "10am - 6pm",
                 "description": "Restaurant",
                 "name": "PUESTO RESTAURANT",
+                "img_specialty": "puesto.png",
                 "phone": "0322561934",
                 "storeid": "08"
             }
